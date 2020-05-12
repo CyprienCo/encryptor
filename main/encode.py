@@ -58,12 +58,12 @@ class VigenereEncoderDecoder(Encoder):
         return ALPHABET_CODE_LETTER[code_a + (ALPHABET_LETTER_CODE[symbol] - code_a + ind) % ALPHABET_POWER]
 
 
-class VernamEncoder:
+class VernamEncoder(Encoder):
 
     def __init__(self, key):
-        self.key = int(key)
+        super().__init__(key)
 
-    def encode(self, text):
+    def encode(self, text: str, subcomm: str):
         binary_text = []
         for symbol in text:
             if symbol not in SYMBOL_STR:
@@ -71,13 +71,16 @@ class VernamEncoder:
             binary_text.append(CODE_BIN[symbol])
         return bin(int(''.join(binary_text), 2) ^ self.key)[2:]
 
+    def calc(self, symbol: str, position: int, subcomm: str):
+        pass
 
-class VernamDecoder:
+
+class VernamDecoder(Encoder):
 
     def __init__(self, key):
-        self.key = int(key)
+        super().__init__(key)
 
-    def encode(self, text: str):
+    def encode(self, text: str, subcomm: str):
         binary_result = bin(self.key ^ int(text, 2))[2:]
         result = []
         for symbol in range(0, len(binary_result), BIT_COUNT):
@@ -87,3 +90,6 @@ class VernamDecoder:
             except IndexError:
                 print(f'There is no symbol #{index}')
         return ''.join(result)
+
+    def calc(self, symbol: str, position: int, subcomm: str):
+        pass

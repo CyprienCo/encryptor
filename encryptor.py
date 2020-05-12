@@ -9,12 +9,12 @@ from main.train import DefaultTrainer
 
 
 def print_res(args, func):
-    text = args.input_file.read() if args.input_file else sys.stdin.read()
+    text = args.input_file.read() if args.input_file is not None else sys.stdin.read()
     TextChecker.check(text)
     if args.output_file is not None:
-        args.output_file.write(func(text))
+        args.output_file.write(func(text, args.mode))
     else:
-        sys.stdout.write(func(text))
+        sys.stdout.write(func(text, args.mode))
 
 
 def encode_decode(args):

@@ -1,5 +1,5 @@
 import string
-from copy import deepcopy
+import abc
 from collections import defaultdict
 
 from main.config import ALPHABET_POWER, ALPHABET_LETTER_CODE
@@ -8,12 +8,18 @@ from main.train import DefaultTrainer
 
 
 class Hacker:
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, model):
         self.model = defaultdict(float, model)
 
-    def hack(self, text: str):
+    @abc.abstractmethod
+    def hack(self, text: str, subcomm=None):
         pass
+
+
+def rotate(o_dict, shift=1):
+    pass
 
 
 class CaesarHacker(Hacker):
@@ -23,7 +29,7 @@ class CaesarHacker(Hacker):
         self.caesar_decoders = [CaesarEncoderDecoder(shift) for shift in range(ALPHABET_POWER)]
         self.trainer = DefaultTrainer()
 
-    def hack(self, text: str):
+    def hack(self, text: str, subcomm=None):
         results = [0 for shift in range(ALPHABET_POWER)]
         shift_result = 0
 
@@ -34,12 +40,12 @@ class CaesarHacker(Hacker):
                 results[shift] += (self.model[letter] - current_model[letter]) ** 2
             if results[shift] < results[shift_result]:
                 shift_result = shift
-            next_model = current_model.copy()
-            for letter_id in range(ALPHABET_POWER):
-                next_model[string.ascii_lowercase[letter_id]] = current_model[
-                    string.ascii_lowercase[(letter_id + 1) % ALPHABET_POWER]]
 
-            current_model = next_model.copy()
+            tmp = current_model[ALPHABET_POWER - 1]
+            for letter_id in range(ALPHABET_POWER):
+                current_model[string.ascii_lowercase[letter_id]] = current_model[
+                    string.ascii_lowercase[(letter_id + 1) % ALPHABET_POWER]]
+            current_model[0] = tmp
 
         self.trainer.clear()
 
@@ -104,7 +110,7 @@ class VigenereHacker(Hacker):
                 result.append(letter)
         return result
 
-    def hack(self, text: str):
+    def hack(self, text: str, subcomm=None):
         letters = []
         for letter in text:
             if letter.isalpha():
