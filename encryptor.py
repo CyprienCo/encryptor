@@ -5,13 +5,13 @@ import sys
 from main.encode import CaesarEncoderDecoder, VigenereEncoderDecoder, VernamEncoder, VernamDecoder
 from main.hack import CaesarHacker, VigenereHacker
 from main.text_checker import TextChecker
-from main.train import DefaultTrainer, BonusTrainer
+from main.train import DefaultTrainer
 
 
 def print_res(args, func):
     text = args.input_file.read() if args.input_file else sys.stdin.read()
     TextChecker.check(text)
-    if args.output_file:
+    if args.output_file is not None:
         args.output_file.write(func(text))
     else:
         sys.stdout.write(func(text))
@@ -19,7 +19,7 @@ def print_res(args, func):
 
 def encode_decode(args):
     if args.cipher == 'vernam':
-        class_k = VernamEncoder(args.key)
+        class_k = VernamEncoder(args.key) if args.mode == 'encode' else VernamDecoder(args.key)
     elif args.cipher == 'caesar':
         class_k = CaesarEncoderDecoder(int(args.key))
     else:
@@ -28,7 +28,7 @@ def encode_decode(args):
 
 
 def train(args):
-    trainer = BonusTrainer(args.n) if args.bonus_mode else DefaultTrainer()
+    trainer = DefaultTrainer()
     text = args.text_file.read() if args.text_file else sys.stdin.read()
     TextChecker.check(text)
     trainer.feed(text)
@@ -39,7 +39,7 @@ def hack(args):
     try:
         model = json.load(args.model_file)
     except json.JSONDecodeError:
-        raise Exception('Incorrect model file')
+        raise FileNotFoundError('Incorrect model file')
 
     hacker = CaesarHacker(model) if args.cipher == 'caesar' else VigenereHacker(model)
     print_res(args, hacker.hack)

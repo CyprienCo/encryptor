@@ -1,18 +1,23 @@
+import abc
+
 from main.config import ALPHABET_POWER, CODE_BASIS, SYMBOL_STR, ALPHABET_LETTER_CODE, \
-                        ALPHABET_CODE_LETTER, CODE_BIN, BIT_COUNT
+                        ALPHABET_CODE_LETTER, CODE_BIN, BIT_COUNT, CODE_LOWER, CODE_UPPER
 
 
 class Encoder:
 
+    __metaclass__ = abc.ABCMeta
+
     def __init__(self, key):
         self.key = key
 
+    @abc.abstractmethod
     def calc(self, symbol: str, position: int, subcomm: str):
         pass
 
     def encode(self, text: str, subcomm: str):
         result = []
-        if subcomm == 'decode':
+        if subcomm == 'decode' and (isinstance(self.key, int) or self.key.isdigit()):
             self.key = -self.key
         position = 0
         for symbol in text:
@@ -31,7 +36,7 @@ class CaesarEncoderDecoder(Encoder):
         super().__init__(key)
 
     def calc(self, symbol: str, position: int, subcomm):
-        code_a = ALPHABET_LETTER_CODE['A'] if symbol.isupper() else ALPHABET_LETTER_CODE['a']
+        code_a = CODE_UPPER if symbol.isupper() else CODE_LOWER
         return ALPHABET_CODE_LETTER[code_a + (ALPHABET_LETTER_CODE[symbol] - code_a + self.key) % ALPHABET_POWER]
 
 
@@ -44,9 +49,9 @@ class VigenereEncoderDecoder(Encoder):
         super().__init__(key)
 
     def calc(self, symbol: str, position: int, subcomm: str):
-        code_a = ALPHABET_LETTER_CODE['A'] if symbol.isupper() else ALPHABET_LETTER_CODE['a']
+        code_a = CODE_UPPER if symbol.isupper() else CODE_LOWER
 
-        ind = ALPHABET_LETTER_CODE[self.key[position % len(self.key)]] - ALPHABET_LETTER_CODE['a']
+        ind = ALPHABET_LETTER_CODE[self.key[position % len(self.key)]] - CODE_LOWER
         if subcomm == 'decode':
             ind = -ind
 

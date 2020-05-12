@@ -79,6 +79,31 @@ class VigenereHacker(Hacker):
             current_text.append(text[position])
         return self.calc_coincidence_index(''.join(current_text))
 
+    def calc_key_len(self, len_ic: list):
+        key_len = 1
+        for length, coincidence_index in enumerate(len_ic):
+            if self.coincidence_index < coincidence_index:
+                key_len = length + 1
+                break
+            if abs(coincidence_index - self.coincidence_index) < abs(len_ic[key_len - 1] - self.coincidence_index):
+                key_len = length + 1
+        return key_len
+
+    def calc_result(self, text: str, key_len: int, strings: list):
+        result = []
+
+        letter_id = 0
+        for letter in text:
+            if letter.isalpha():
+                symbol = strings[letter_id % key_len][letter_id // key_len]
+                if letter.isupper():
+                    symbol = symbol.upper()
+                result.append(symbol)
+                letter_id += 1
+            else:
+                result.append(letter)
+        return result
+
     def hack(self, text: str):
         letters = []
         for letter in text:
@@ -93,34 +118,16 @@ class VigenereHacker(Hacker):
             len_ic.append(self.check_length(letter_text, current_length))
             current_length += 1
 
-        key_len = 1
-        for length, coincidence_index in enumerate(len_ic):
-            if self.coincidence_index < coincidence_index:
-                key_len = length + 1
-                break
-            if abs(coincidence_index - self.coincidence_index) < abs(len_ic[key_len - 1] - self.coincidence_index):
-                key_len = length + 1
+        key_len = self.calc_key_len(len_ic)
 
         strings = ['' for index in range(key_len)]
         for position, symbol in enumerate(letter_text):
             strings[position % key_len] = ''.join((strings[position % key_len],  symbol))
 
         caesar_hacker = CaesarHacker(self.model)
-
         for index in range(key_len):
             strings[index] = caesar_hacker.hack(strings[index])
 
-        result = []
-
-        letter_id = 0
-        for letter in text:
-            if letter.isalpha():
-                symbol = strings[letter_id % key_len][letter_id // key_len]
-                if letter.isupper():
-                    symbol = symbol.upper()
-                result.append(symbol)
-                letter_id += 1
-            else:
-                result.append(letter)
+        result = self.calc_result(text, key_len, strings)
 
         return ''.join(result)

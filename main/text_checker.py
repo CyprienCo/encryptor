@@ -1,4 +1,4 @@
-from main.config import ALPHABET_LETTER_CODE
+import string
 
 
 class TextChecker:
@@ -6,5 +6,5 @@ class TextChecker:
     @staticmethod
     def check(text: str):
         for letter in text:
-            if letter.isalpha() and ALPHABET_LETTER_CODE[letter] > ALPHABET_LETTER_CODE['z']:
+            if letter not in string.ascii_letters:
                 raise Exception('Text cannot contain non-english alphabet letters')

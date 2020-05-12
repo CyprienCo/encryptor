@@ -1,20 +1,27 @@
 import json
 import string
-from itertools import islice
+import abc
+
 from collections import defaultdict
 
 
 class Trainer:
 
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
     def __init__(self):
         pass
 
+    @abc.abstractmethod
     def feed(self, text: str):
         pass
 
+    @abc.abstractmethod
     def clear(self):
         pass
 
+    @abc.abstractmethod
     def get_model(self):
         pass
 
