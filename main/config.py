@@ -15,6 +15,3 @@ CODE_BIN = {SYMBOL_STR[code]: bin(CODE_BASIS + code)[2:] for code in range(len(S
 CODE_LOWER = ALPHABET_LETTER_CODE[string.ascii_lowercase[0]]
 CODE_UPPER = ALPHABET_LETTER_CODE[string.ascii_uppercase[0]]
 
-
-if __name__ == '__main__':
-    print(int(CODE_BIN['\n']))

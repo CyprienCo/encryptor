@@ -18,10 +18,6 @@ class Hacker:
         pass
 
 
-def rotate(o_dict, shift=1):
-    pass
-
-
 class CaesarHacker(Hacker):
 
     def __init__(self, model):

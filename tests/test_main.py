@@ -51,9 +51,9 @@ class TestEncodeDecode:
     def test_vernam_encoder_decoder(self, text_length, key):
         text = get_random_string(text_length)
         vernam_encoder = VernamEncoder(key)
-        encrypted_text = vernam_encoder.encode(text)
+        encrypted_text = vernam_encoder.encode(text, 'encode')
         vername_decoder = VernamDecoder(key)
-        assert vername_decoder.encode(encrypted_text) == text
+        assert vername_decoder.encode(encrypted_text, 'decode') == text
 
 
 class TestTrainerHacker:
